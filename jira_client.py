@@ -14,9 +14,11 @@ def _get_secret(key: str) -> str:
     """Read from Streamlit secrets (deploy) or .env (local)."""
     try:
         import streamlit as st
-        return st.secrets.get(key, os.getenv(key, ""))
+        if key in st.secrets:
+            return st.secrets[key]
     except Exception:
-        return os.getenv(key, "")
+        pass
+    return os.getenv(key, "")
 
 
 JIRA_URL = _get_secret("JIRA_URL").rstrip("/")

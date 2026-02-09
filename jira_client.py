@@ -9,9 +9,19 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-JIRA_URL = os.getenv("JIRA_URL", "").rstrip("/")
-JIRA_EMAIL = os.getenv("JIRA_EMAIL", "")
-JIRA_API_TOKEN = os.getenv("JIRA_API_TOKEN", "")
+
+def _get_secret(key: str) -> str:
+    """Read from Streamlit secrets (deploy) or .env (local)."""
+    try:
+        import streamlit as st
+        return st.secrets.get(key, os.getenv(key, ""))
+    except Exception:
+        return os.getenv(key, "")
+
+
+JIRA_URL = _get_secret("JIRA_URL").rstrip("/")
+JIRA_EMAIL = _get_secret("JIRA_EMAIL")
+JIRA_API_TOKEN = _get_secret("JIRA_API_TOKEN")
 
 
 def _auth() -> HTTPBasicAuth:
